@@ -68,123 +68,47 @@ npx lostconf --format json
 
 lostconf supports **48+ configuration files** from popular tools across **15+ languages**:
 
-### JavaScript/TypeScript
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.eslintignore` | ESLint | File paths and glob patterns in ignore list |
-| `.prettierignore` | Prettier | File paths and glob patterns in ignore list |
-| `tsconfig.json` | TypeScript | Files in `exclude`, `include` arrays |
-| `jest.config.json` | Jest | Test paths, coverage paths, module paths |
-| `.stylelintignore` | Stylelint | File paths and glob patterns in ignore list |
-| `.stylelintrc.json` | Stylelint | Ignore patterns in config |
-| `biome.json`, `biome.jsonc` | Biome | Patterns in `files.ignore`, `linter.ignore`, `formatter.ignore` |
-| `deno.json`, `deno.jsonc` | Deno | Global `exclude`, `lint.exclude/include`, `fmt.exclude/include`, `test.exclude/include` |
-
-### Python
-| File | Tool | What We Check |
-|------|------|---------------|
-| `pyproject.toml` | pytest, coverage, mypy, ruff, black, isort | Test paths, source paths, exclude patterns, omit patterns |
-| `.flake8` | Flake8 | Exclude patterns, extend-exclude, filename patterns, per-file-ignores |
-| `setup.cfg` | Flake8 | `[flake8]` section exclude patterns |
-| `.pylintrc`, `pylintrc` | Pylint | Ignore paths, ignore patterns in `[MASTER]`/`[MAIN]` section |
-| `.bandit` | Bandit | Exclude directories, exclude files, test paths |
-| `pyrightconfig.json` | Pyright | `include`, `exclude`, `ignore`, `extraPaths` patterns |
-
-### Ruby
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.rubocop.yml` | RuboCop | Exclude patterns, Include patterns in AllCops |
-
-### Go
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.golangci.yml` | golangci-lint | Skip-dirs, skip-files, exclude patterns |
-
-### Rust
-| File | Tool | What We Check |
-|------|------|---------------|
-| `rustfmt.toml` | rustfmt | Ignore patterns |
-| `clippy.toml` | Clippy | Excluded files |
-
-### Java
-| File | Tool | What We Check |
-|------|------|---------------|
-| `checkstyle.xml` | Checkstyle | SuppressionFilter file attributes |
-| `pmd.xml` | PMD | Exclude patterns in rulesets |
-| `spotbugs.xml` | SpotBugs | Match/Class elements |
-
-### Kotlin
-| File | Tool | What We Check |
-|------|------|---------------|
-| `detekt.yml` | detekt | Excludes patterns in config |
-
-### PHP
-| File | Tool | What We Check |
-|------|------|---------------|
-| `phpcs.xml` | PHP_CodeSniffer | Exclude-pattern elements |
-| `phpstan.neon` | PHPStan | Excludes_analyse, ignoreErrors paths |
-
-### Swift
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.swiftlint.yml` | SwiftLint | Excluded paths, included paths |
-
-### C/C++
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.clang-tidy` | clang-tidy | CheckOptions paths |
-| `.clang-format` | clang-format | File patterns |
-
-### Scala
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.scalafmt.conf` | Scalafmt | Project.excludeFilters |
-| `.scalafix.conf` | Scalafix | Excludes patterns |
-
-### Elixir
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.credo.exs` | Credo | Files.excluded paths |
-
-### .NET
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.editorconfig` | EditorConfig | File globs and patterns |
-| `Directory.Build.props` | MSBuild | Include/Exclude item patterns |
-
-### Shell Scripts
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.shellcheckrc` | ShellCheck | Source-path directives |
-
-### YAML
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.yamllint`, `.yamllint.yml` | yamllint | Ignore patterns, ignore-from-file paths |
-
-### Terraform
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.tflint.hcl` | TFLint | Source paths, module directories, exclude patterns |
-
-### Security
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.semgrep.yml`, `.semgrep.yaml` | Semgrep | `paths.exclude`, `paths.include` in rules |
-| `.semgrepignore` | Semgrep | All ignore patterns (gitignore format) |
-| `.gitleaks.toml` | Gitleaks | `allowlist.paths`, `allowlist.regexes`, rule-specific allowlists |
-
-### Docker
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.hadolint.yaml`, `.hadolint.yml` | Hadolint | `ignored` patterns, `trustedRegistries` (non-URL paths) |
-
-### General
-| File | Tool | What We Check |
-|------|------|---------------|
-| `.gitignore` | Git | All file paths and patterns |
-| `.dockerignore` | Docker | All file paths and patterns |
-| `.markdownlintignore` | markdownlint | All file paths and patterns |
+| Language/Category | Tool | Config File(s) | What We Check |
+|-------------------|------|----------------|---------------|
+| **JavaScript/TypeScript** | ESLint | `.eslintignore` | File paths and glob patterns in ignore list |
+| | Prettier | `.prettierignore` | File paths and glob patterns in ignore list |
+| | TypeScript | `tsconfig.json` | Files in `exclude`, `include` arrays |
+| | Jest | `jest.config.json` | Test paths, coverage paths, module paths |
+| | Stylelint | `.stylelintignore`, `.stylelintrc.json` | File paths and glob patterns, ignore patterns in config |
+| | Biome | `biome.json`, `biome.jsonc` | Patterns in `files.ignore`, `linter.ignore`, `formatter.ignore` |
+| | Deno | `deno.json`, `deno.jsonc` | Global `exclude`, `lint.exclude/include`, `fmt.exclude/include`, `test.exclude/include` |
+| **Python** | pytest, coverage, mypy, ruff, black, isort | `pyproject.toml` | Test paths, source paths, exclude patterns, omit patterns |
+| | Flake8 | `.flake8`, `setup.cfg` | Exclude patterns, extend-exclude, filename patterns, per-file-ignores |
+| | Pylint | `.pylintrc`, `pylintrc` | Ignore paths, ignore patterns in `[MASTER]`/`[MAIN]` section |
+| | Bandit | `.bandit` | Exclude directories, exclude files, test paths |
+| | Pyright | `pyrightconfig.json` | `include`, `exclude`, `ignore`, `extraPaths` patterns |
+| **Ruby** | RuboCop | `.rubocop.yml` | Exclude patterns, Include patterns in AllCops |
+| **Go** | golangci-lint | `.golangci.yml` | Skip-dirs, skip-files, exclude patterns |
+| **Rust** | rustfmt | `rustfmt.toml` | Ignore patterns |
+| | Clippy | `clippy.toml` | Excluded files |
+| **Java** | Checkstyle | `checkstyle.xml` | SuppressionFilter file attributes |
+| | PMD | `pmd.xml` | Exclude patterns in rulesets |
+| | SpotBugs | `spotbugs.xml` | Match/Class elements |
+| **Kotlin** | detekt | `detekt.yml` | Excludes patterns in config |
+| **PHP** | PHP_CodeSniffer | `phpcs.xml` | Exclude-pattern elements |
+| | PHPStan | `phpstan.neon` | Excludes_analyse, ignoreErrors paths |
+| **Swift** | SwiftLint | `.swiftlint.yml` | Excluded paths, included paths |
+| **C/C++** | clang-tidy | `.clang-tidy` | CheckOptions paths |
+| | clang-format | `.clang-format` | File patterns |
+| **Scala** | Scalafmt | `.scalafmt.conf` | Project.excludeFilters |
+| | Scalafix | `.scalafix.conf` | Excludes patterns |
+| **Elixir** | Credo | `.credo.exs` | Files.excluded paths |
+| **.NET** | EditorConfig | `.editorconfig` | File globs and patterns |
+| | MSBuild | `Directory.Build.props` | Include/Exclude item patterns |
+| **Shell** | ShellCheck | `.shellcheckrc` | Source-path directives |
+| **YAML** | yamllint | `.yamllint`, `.yamllint.yml` | Ignore patterns, ignore-from-file paths |
+| **Terraform** | TFLint | `.tflint.hcl` | Source paths, module directories, exclude patterns |
+| **Security** | Semgrep | `.semgrep.yml`, `.semgrep.yaml`, `.semgrepignore` | `paths.exclude`, `paths.include` in rules, ignore patterns |
+| | Gitleaks | `.gitleaks.toml` | `allowlist.paths`, `allowlist.regexes`, rule-specific allowlists |
+| **Docker** | Hadolint | `.hadolint.yaml`, `.hadolint.yml` | `ignored` patterns, `trustedRegistries` (non-URL paths) |
+| **General** | Git | `.gitignore` | All file paths and patterns |
+| | Docker | `.dockerignore` | All file paths and patterns |
+| | markdownlint | `.markdownlintignore` | All file paths and patterns |
 
 ## What Does lostconf Validate?
 
