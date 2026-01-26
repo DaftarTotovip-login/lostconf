@@ -24,9 +24,12 @@ program
   .option('-o, --output <file>', 'Write to file instead of stdout')
   .option('--include <glob...>', 'Only check matching config files')
   .option('--exclude <glob...>', 'Skip matching config files')
+  .option('--skip-ignore-files', 'Skip .gitignore, .prettierignore, etc. (reduces noise)')
+  .option('--exclude-parsers <names...>', 'Skip specific parsers (e.g., gitignore prettierignore)')
   .option('--fail-on-stale', 'Exit code 1 if stale patterns found')
   .option('-q, --quiet', 'Suppress non-error output')
   .option('-v, --verbose', 'Show debug info')
+  .option('--no-progress', 'Disable progress indicator')
   .action(async (paths: string[], options) => {
     try {
       await run(paths, options);
@@ -43,9 +46,12 @@ interface CliOptions {
   output?: string;
   include?: string[];
   exclude?: string[];
+  skipIgnoreFiles?: boolean;
+  excludeParsers?: string[];
   failOnStale?: boolean;
   quiet?: boolean;
   verbose?: boolean;
+  progress?: boolean;
 }
 
 async function run(paths: string[], options: CliOptions): Promise<void> {
@@ -54,9 +60,12 @@ async function run(paths: string[], options: CliOptions): Promise<void> {
     output,
     include,
     exclude,
+    skipIgnoreFiles = false,
+    excludeParsers = [],
     failOnStale = false,
     quiet = false,
-    verbose = false
+    verbose = false,
+    progress = true
   } = options;
 
   // Default to current directory if no paths specified
@@ -65,13 +74,30 @@ async function run(paths: string[], options: CliOptions): Promise<void> {
   // Get formatter
   const formatter = getFormatter(format);
 
-  // Create engine with all built-in parsers
-  const parsers = getBuiltinParsers();
+  // Get all built-in parsers
+  let parsers = getBuiltinParsers();
+
+  // Filter parsers based on options
+  const ignoreParserNames = ['gitignore', 'dockerignore', 'prettierignore', 'eslintignore'];
+  const excludeParserSet = new Set([
+    ...(skipIgnoreFiles ? ignoreParserNames : []),
+    ...excludeParsers
+  ]);
+
+  if (excludeParserSet.size > 0) {
+    parsers = parsers.filter((p) => !excludeParserSet.has(p.name));
+    if (verbose) {
+      console.error(`[lostconf] Excluded parsers: ${Array.from(excludeParserSet).join(', ')}`);
+    }
+  }
+
+  // Create engine
   const engine = createEngine(parsers, {
     paths: scanPaths,
     include,
     exclude,
-    verbose
+    verbose,
+    progress: progress && !quiet && !verbose && format === 'text'
   });
 
   // Run validation

@@ -101,6 +101,76 @@ describe('validatePattern', () => {
       expect(result.valid).toBe(true);
     });
   });
+
+  describe('relative path resolution', () => {
+    it('should resolve relative paths with configBasePath option', () => {
+      const tree: FileTree = {
+        files: new Set(['packages/foo/bar.ts', 'packages/foo/src/index.ts']),
+        directories: new Set(['packages', 'packages/foo', 'packages/foo/src']),
+        basePath: '/project'
+      };
+
+      const pattern: Pattern = {
+        value: './bar.ts',
+        type: PatternType.PATH,
+        line: 1
+      };
+
+      const result = validatePattern(pattern, tree, { configBasePath: 'packages/foo' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should resolve parent directory references', () => {
+      const tree: FileTree = {
+        files: new Set(['packages/shared/utils.ts', 'packages/foo/src/index.ts']),
+        directories: new Set(['packages', 'packages/shared', 'packages/foo', 'packages/foo/src']),
+        basePath: '/project'
+      };
+
+      const pattern: Pattern = {
+        value: '../shared',
+        type: PatternType.PATH,
+        line: 1
+      };
+
+      const result = validatePattern(pattern, tree, { configBasePath: 'packages/foo' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should not modify absolute paths', () => {
+      const tree: FileTree = {
+        files: new Set(['/absolute/path/file.ts']),
+        directories: new Set(['/absolute', '/absolute/path']),
+        basePath: '/project'
+      };
+
+      const pattern: Pattern = {
+        value: '/absolute/path/file.ts',
+        type: PatternType.PATH,
+        line: 1
+      };
+
+      const result = validatePattern(pattern, tree, { configBasePath: 'packages/foo' });
+      expect(result.valid).toBe(true);
+    });
+
+    it('should handle current directory reference', () => {
+      const tree: FileTree = {
+        files: new Set(['packages/foo/index.ts']),
+        directories: new Set(['packages', 'packages/foo']),
+        basePath: '/project'
+      };
+
+      const pattern: Pattern = {
+        value: './index.ts',
+        type: PatternType.PATH,
+        line: 1
+      };
+
+      const result = validatePattern(pattern, tree, { configBasePath: 'packages/foo' });
+      expect(result.valid).toBe(true);
+    });
+  });
 });
 
 describe('validatePatterns', () => {
@@ -132,5 +202,100 @@ describe('validatePatterns', () => {
     const findings = validatePatterns('.eslintignore', patterns, 'eslintignore', mockTree);
 
     expect(findings[0].parser).toBe('eslintignore');
+  });
+
+  describe('nested config files', () => {
+    it('should resolve relative paths in nested tsconfig files', () => {
+      const tree: FileTree = {
+        files: new Set([
+          'packages/foo/tsconfig.json',
+          'packages/foo/tsconfig.app.json',
+          'packages/foo/tsconfig.node.json',
+          'packages/foo/src/index.ts'
+        ]),
+        directories: new Set(['packages', 'packages/foo', 'packages/foo/src']),
+        basePath: '/project'
+      };
+
+      const patterns: Pattern[] = [
+        { value: './tsconfig.app.json', type: PatternType.PATH, line: 4 },
+        { value: './tsconfig.node.json', type: PatternType.PATH, line: 5 },
+        { value: './missing.json', type: PatternType.PATH, line: 6 }
+      ];
+
+      const findings = validatePatterns(
+        'packages/foo/tsconfig.json',
+        patterns,
+        'tsconfig',
+        tree
+      );
+
+      expect(findings).toHaveLength(1);
+      expect(findings[0].pattern).toBe('./missing.json');
+      expect(findings[0].file).toBe('packages/foo/tsconfig.json');
+    });
+
+    it('should resolve parent directory references in nested configs', () => {
+      const tree: FileTree = {
+        files: new Set([
+          'packages/vite/src/client/tsconfig.json',
+          'packages/vite/src/types/index.d.ts',
+          'packages/vite/src/node/index.ts'
+        ]),
+        directories: new Set([
+          'packages',
+          'packages/vite',
+          'packages/vite/src',
+          'packages/vite/src/client',
+          'packages/vite/src/types',
+          'packages/vite/src/node'
+        ]),
+        basePath: '/project'
+      };
+
+      const patterns: Pattern[] = [
+        { value: '../types', type: PatternType.PATH, line: 3 },
+        { value: '../node', type: PatternType.PATH, line: 4 }
+      ];
+
+      const findings = validatePatterns(
+        'packages/vite/src/client/tsconfig.json',
+        patterns,
+        'tsconfig',
+        tree
+      );
+
+      expect(findings).toHaveLength(0);
+    });
+
+    it('should handle deeply nested template configs', () => {
+      const tree: FileTree = {
+        files: new Set([
+          'packages/create-vite/template-react-ts/tsconfig.json',
+          'packages/create-vite/template-react-ts/tsconfig.app.json',
+          'packages/create-vite/template-react-ts/tsconfig.node.json'
+        ]),
+        directories: new Set([
+          'packages',
+          'packages/create-vite',
+          'packages/create-vite/template-react-ts'
+        ]),
+        basePath: '/project'
+      };
+
+      const patterns: Pattern[] = [
+        { value: './tsconfig.app.json', type: PatternType.PATH, line: 4 },
+        { value: './tsconfig.node.json', type: PatternType.PATH, line: 5 }
+      ];
+
+      const findings = validatePatterns(
+        'packages/create-vite/template-react-ts/tsconfig.json',
+        patterns,
+        'tsconfig',
+        tree
+      );
+
+      expect(findings).toHaveLength(0);
+    });
   });
 });

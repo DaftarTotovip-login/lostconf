@@ -62,6 +62,52 @@ npx lostconf --fail-on-stale
 
 # JSON output for automation
 npx lostconf --format json
+
+# Skip .gitignore and other ignore files (reduces noise by 70-80%)
+npx lostconf --skip-ignore-files
+
+# Only check TypeScript configs
+npx lostconf --include "**/tsconfig.json"
+```
+
+## CLI Options
+
+### Filtering Options
+
+- `--skip-ignore-files` - Skip .gitignore, .prettierignore, .eslintignore, and .dockerignore files. Reduces noise by 70-80% since these files contain many intentionally missing patterns.
+- `--exclude-parsers <names...>` - Skip specific parsers by name (e.g., `--exclude-parsers gitignore prettierignore`)
+- `--include <glob...>` - Only check config files matching these glob patterns (e.g., `--include "**/tsconfig.json"`)
+- `--exclude <glob...>` - Skip config files matching these glob patterns (e.g., `--exclude "**/test/**"`)
+
+### Output Options
+
+- `-f, --format <fmt>` - Output format: `text` (default), `json`, or `sarif`
+- `-o, --output <file>` - Write results to file instead of stdout
+- `--fail-on-stale` - Exit with code 1 if stale patterns are found (useful for CI)
+- `-q, --quiet` - Suppress non-error output
+- `-v, --verbose` - Show detailed debug information
+
+### Progress
+
+- `--no-progress` - Disable the progress indicator (enabled by default in text mode)
+
+### Examples
+
+```bash
+# Focus on actionable issues (skip ignore files)
+npx lostconf --skip-ignore-files
+
+# Check only TypeScript configs in packages directory
+npx lostconf packages/ --include "**/tsconfig.json"
+
+# CI mode: fail build if stale patterns found, output JSON
+npx lostconf --fail-on-stale --format json --skip-ignore-files
+
+# Scan large monorepo with progress disabled
+npx lostconf --no-progress
+
+# Check everything except test directories
+npx lostconf --exclude "**/test/**" --exclude "**/tests/**"
 ```
 
 ## Supported Config Files

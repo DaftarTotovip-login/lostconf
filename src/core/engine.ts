@@ -21,6 +21,8 @@ export interface EngineOptions {
   exclude?: string[];
   /** Enable verbose logging */
   verbose?: boolean;
+  /** Show progress indicator */
+  progress?: boolean;
 }
 
 export interface Engine {
@@ -30,7 +32,7 @@ export interface Engine {
 
 /** Create the validation engine */
 export function createEngine(parsers: Parser[], options: EngineOptions): Engine {
-  const { paths, include, exclude, verbose = false } = options;
+  const { paths, include, exclude, verbose = false, progress = false } = options;
 
   const log = verbose ? (msg: string) => console.error(`[lostconf] ${msg}`) : () => {};
 
@@ -38,9 +40,14 @@ export function createEngine(parsers: Parser[], options: EngineOptions): Engine 
     async run(): Promise<ValidationResult> {
       // Step 1: Discover config files
       log('Discovering config files...');
+      if (progress) process.stderr.write('Discovering config files...');
       const discoveryOptions: DiscoveryOptions = { paths, include, exclude };
       const configs = await discoverConfigs(parsers, discoveryOptions);
       log(`Found ${configs.length} config files`);
+      if (progress) {
+        process.stderr.write('\r\x1b[K'); // Clear line
+        process.stderr.write(`Found ${configs.length} config files\n`);
+      }
 
       if (configs.length === 0) {
         return {
@@ -51,16 +58,30 @@ export function createEngine(parsers: Parser[], options: EngineOptions): Engine 
 
       // Step 2: Build file tree
       log('Scanning file tree...');
+      if (progress) process.stderr.write('Scanning file tree...');
       const basePath = paths.length === 1 ? path.resolve(paths[0]) : process.cwd();
       const tree: FileTree = await scanFileTree({ paths: [basePath] });
       log(`Found ${tree.files.size} files`);
+      if (progress) {
+        process.stderr.write('\r\x1b[K'); // Clear line
+        process.stderr.write(`Scanned ${tree.files.size} files\n`);
+      }
 
       // Step 3: Parse and validate each config
       const allFindings: Finding[] = [];
       const filesWithFindings = new Set<string>();
 
-      for (const config of configs) {
+      for (let i = 0; i < configs.length; i++) {
+        const config = configs[i];
         log(`Processing ${config.path} with ${config.parser.name}...`);
+
+        // Show progress
+        if (progress) {
+          const percent = Math.round(((i + 1) / configs.length) * 100);
+          const shortPath = config.path.length > 60 ? '...' + config.path.slice(-57) : config.path;
+          process.stderr.write(`\r\x1b[K`); // Clear line
+          process.stderr.write(`Processing configs... [${i + 1}/${configs.length}] ${percent}% - ${shortPath}`);
+        }
 
         try {
           const content = await fs.readFile(config.absolutePath, 'utf-8');
@@ -77,6 +98,12 @@ export function createEngine(parsers: Parser[], options: EngineOptions): Engine 
         } catch (err) {
           log(`  Error: ${err instanceof Error ? err.message : String(err)}`);
         }
+      }
+
+      // Clear progress line
+      if (progress) {
+        process.stderr.write('\r\x1b[K'); // Clear line
+        process.stderr.write(`Processed ${configs.length} config files\n\n`);
       }
 
       return {

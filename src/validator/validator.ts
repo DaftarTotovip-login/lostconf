@@ -31,8 +31,8 @@ export function validatePattern(
 
   // Resolve pattern relative to config file location
   let resolvedPattern = pattern.value;
-  if (configBasePath && pattern.basePath) {
-    resolvedPattern = path.join(pattern.basePath, pattern.value);
+  if (configBasePath && !path.isAbsolute(pattern.value)) {
+    resolvedPattern = path.join(configBasePath, pattern.value);
   }
 
   switch (pattern.type) {
