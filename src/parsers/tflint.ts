@@ -1,0 +1,71 @@
+/**
+ * Parser for TFLint configuration files
+ * TFLint is a Terraform linter
+ */
+
+import type { Pattern } from '../core/types.js';
+import { PatternType } from '../core/types.js';
+import type { Parser } from '../plugin/types.js';
+import { isGlobPattern } from '../validator/glob.js';
+
+/** Parse .tflint.hcl file */
+function parseTflint(_filename: string, content: string): Pattern[] {
+  const patterns: Pattern[] = [];
+  const lines = content.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const lineNum = i + 1;
+    const trimmed = line.trim();
+
+    // Skip empty lines and comments
+    if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('//')) {
+      continue;
+    }
+
+    // Look for disabled_by_default or paths in config blocks
+    // Example: disabled_by_default = "path/to/file"
+    // Example: source = "path/to/module"
+    const pathMatch = trimmed.match(/(?:disabled_by_default|source|module_dir)\s*=\s*"([^"]+)"/);
+    if (pathMatch) {
+      const path = pathMatch[1];
+      const type = isGlobPattern(path) ? PatternType.GLOB : PatternType.PATH;
+
+      patterns.push({
+        value: path,
+        type,
+        line: lineNum,
+        column: 1
+      });
+    }
+
+    // Look for exclude patterns in rule blocks
+    // Example: exclude = ["path/**"]
+    const excludeMatch = trimmed.match(/exclude\s*=\s*\[(.*?)\]/);
+    if (excludeMatch) {
+      const excludeContent = excludeMatch[1];
+      const pathMatches = excludeContent.matchAll(/"([^"]+)"/g);
+
+      for (const match of pathMatches) {
+        const path = match[1];
+        const type = isGlobPattern(path) ? PatternType.GLOB : PatternType.PATH;
+
+        patterns.push({
+          value: path,
+          type,
+          line: lineNum,
+          column: (match.index ?? 0) + 1
+        });
+      }
+    }
+  }
+
+  return patterns;
+}
+
+/** TFLint .tflint.hcl file parser */
+export const tflintParser: Parser = {
+  name: 'tflint',
+  filePatterns: ['.tflint.hcl', '**/.tflint.hcl'],
+  parse: parseTflint
+};

@@ -1,0 +1,7 @@
+# Build output
+dist
+build
+
+# Stale patterns
+old-styles.css
+legacy/**/*.js

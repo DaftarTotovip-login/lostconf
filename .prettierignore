@@ -1,0 +1,14 @@
+# Build outputs (may not exist yet)
+# dist/**
+
+# Dependencies (excluded by scanner anyway)
+# node_modules/**
+
+# Coverage reports (may not exist yet)
+# coverage/**
+
+# Markdown handled separately
+*.md
+
+# Package lock
+package-lock.json

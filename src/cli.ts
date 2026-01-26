@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+
+/**
+ * CLI entry point for lostconf
+ */
+
+import { Command } from 'commander';
+import fs from 'fs/promises';
+import { createEngine } from './core/engine.js';
+import { getBuiltinParsers } from './parsers/index.js';
+import { createTextFormatter } from './output/text.js';
+import { createJsonFormatter } from './output/json.js';
+import { createSarifFormatter } from './output/sarif.js';
+import type { Formatter } from './output/formatter.js';
+
+const program = new Command();
+
+program
+  .name('lostconf')
+  .description('A meta-linter that detects stale references in configuration files')
+  .version('0.1.0')
+  .argument('[paths...]', 'Paths to scan (default: current directory)')
+  .option('-f, --format <fmt>', 'Output format: text, json, sarif', 'text')
+  .option('-o, --output <file>', 'Write to file instead of stdout')
+  .option('--include <glob...>', 'Only check matching config files')
+  .option('--exclude <glob...>', 'Skip matching config files')
+  .option('--fail-on-stale', 'Exit code 1 if stale patterns found')
+  .option('-q, --quiet', 'Suppress non-error output')
+  .option('-v, --verbose', 'Show debug info')
+  .action(async (paths: string[], options) => {
+    try {
+      await run(paths, options);
+    } catch (err) {
+      if (!options.quiet) {
+        console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      }
+      process.exit(2);
+    }
+  });
+
+interface CliOptions {
+  format: string;
+  output?: string;
+  include?: string[];
+  exclude?: string[];
+  failOnStale?: boolean;
+  quiet?: boolean;
+  verbose?: boolean;
+}
+
+async function run(paths: string[], options: CliOptions): Promise<void> {
+  const {
+    format,
+    output,
+    include,
+    exclude,
+    failOnStale = false,
+    quiet = false,
+    verbose = false
+  } = options;
+
+  // Default to current directory if no paths specified
+  const scanPaths = paths.length > 0 ? paths : ['.'];
+
+  // Get formatter
+  const formatter = getFormatter(format);
+
+  // Create engine with all built-in parsers
+  const parsers = getBuiltinParsers();
+  const engine = createEngine(parsers, {
+    paths: scanPaths,
+    include,
+    exclude,
+    verbose
+  });
+
+  // Run validation
+  const result = await engine.run();
+
+  // Format output
+  const formatted = formatter.format(result);
+
+  // Write output
+  if (output) {
+    await fs.writeFile(output, formatted, 'utf-8');
+    if (!quiet) {
+      console.log(`Results written to ${output}`);
+    }
+  } else if (!quiet) {
+    console.log(formatted);
+  }
+
+  // Exit code
+  if (failOnStale && result.findings.length > 0) {
+    process.exit(1);
+  }
+}
+
+function getFormatter(format: string): Formatter {
+  switch (format) {
+    case 'json':
+      return createJsonFormatter();
+    case 'sarif':
+      return createSarifFormatter();
+    case 'text':
+    default:
+      return createTextFormatter();
+  }
+}
+
+program.parse();

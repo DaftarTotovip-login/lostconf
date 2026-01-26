@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build output
+dist
+build
+
+# Stale patterns (for testing)
+src/legacy/*.js
+old-config.json
+temp/
+
+# Valid patterns
+*.log
+.env
+.env.local
