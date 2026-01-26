@@ -44,7 +44,7 @@ describe('CLI Integration Tests', () => {
   it('should output text format by default', async () => {
     await fs.writeFile(path.join(testDir, '.gitignore'), 'stale-pattern');
 
-    const { stdout } = await execAsync(`node ${cliPath} ${testDir}`);
+    const { stdout } = await execAsync(`node ${cliPath} ${testDir} --show-all`);
 
     expect(stdout).toContain('stale-pattern');
     expect(stdout).toContain('Found');
@@ -53,7 +53,7 @@ describe('CLI Integration Tests', () => {
   it('should output JSON format', async () => {
     await fs.writeFile(path.join(testDir, '.gitignore'), 'stale-pattern');
 
-    const { stdout } = await execAsync(`node ${cliPath} ${testDir} --format json`);
+    const { stdout } = await execAsync(`node ${cliPath} ${testDir} --format json --show-all`);
 
     const result = JSON.parse(stdout);
     expect(result).toHaveProperty('findings');
@@ -88,7 +88,7 @@ describe('CLI Integration Tests', () => {
     await fs.writeFile(path.join(testDir, '.gitignore'), 'stale-pattern');
 
     try {
-      await execAsync(`node ${cliPath} ${testDir} --fail-on-stale`);
+      await execAsync(`node ${cliPath} ${testDir} --fail-on-stale --show-all`);
       expect.fail('Should have thrown');
     } catch (error: any) {
       expect(error.code).toBe(1);
@@ -121,7 +121,7 @@ describe('CLI Integration Tests', () => {
     await fs.writeFile(path.join(testDir, '.prettierignore'), 'stale-prettier');
 
     const { stdout } = await execAsync(
-      `node ${cliPath} ${testDir} --format json --include "**/.gitignore"`
+      `node ${cliPath} ${testDir} --format json --include "**/.gitignore" --show-all`
     );
 
     const result = JSON.parse(stdout);
@@ -133,8 +133,8 @@ describe('CLI Integration Tests', () => {
     await fs.writeFile(path.join(testDir, '.gitignore'), 'stale-git');
     await fs.writeFile(path.join(testDir, '.prettierignore'), 'stale-prettier');
 
-    const { stdout } = await execAsync(
-      `node ${cliPath} ${testDir} --format json --exclude "**/.gitignore"`
+    const { stdout} = await execAsync(
+      `node ${cliPath} ${testDir} --format json --exclude "**/.gitignore" --show-all`
     );
 
     const result = JSON.parse(stdout);
@@ -151,7 +151,7 @@ describe('CLI Integration Tests', () => {
     await fs.writeFile(path.join(dir1, '.gitignore'), 'stale1');
     await fs.writeFile(path.join(dir2, '.gitignore'), 'stale2');
 
-    const { stdout } = await execAsync(`node ${cliPath} ${dir1} ${dir2} --format json`);
+    const { stdout } = await execAsync(`node ${cliPath} ${dir1} ${dir2} --format json --show-all`);
 
     const result = JSON.parse(stdout);
     expect(result.findings.length).toBeGreaterThanOrEqual(2);
@@ -165,7 +165,7 @@ describe('CLI Integration Tests', () => {
     // Create matching file
     await fs.writeFile(path.join(testDir, 'test.log'), 'content');
 
-    const { stdout } = await execAsync(`node ${cliPath} ${testDir}`);
+    const { stdout } = await execAsync(`node ${cliPath} ${testDir} --show-all`);
 
     expect(stdout).toContain('No stale patterns found');
   });

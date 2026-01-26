@@ -8,6 +8,12 @@
   "bin": {
     "lostconf": "dist/cli.js"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -20,7 +26,11 @@
     "format:check": "prettier --check src tests",
     "typecheck": "tsc --noEmit",
     "selfcheck": "node dist/cli.js --exclude 'tests/fixtures/**'",
-    "prepublishOnly": "npm run build && npm run lint && npm run test"
+    "prepublishOnly": "npm run build && npm run lint && npm run test",
+    "release": "scripts/release.sh",
+    "release:patch": "scripts/release.sh patch",
+    "release:minor": "scripts/release.sh minor",
+    "release:major": "scripts/release.sh major"
   },
   "repository": {
     "type": "git",

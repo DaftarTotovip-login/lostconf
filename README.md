@@ -51,8 +51,14 @@ npm install --save-dev lostconf
 ## Quick Start
 
 ```bash
-# Scan current directory
+# Scan current directory (shows medium+ severity by default)
 npx lostconf
+
+# Show all findings including low severity (common patterns like node_modules)
+npx lostconf --show-all
+
+# Only show high severity issues
+npx lostconf --min-severity=high
 
 # Scan specific paths
 npx lostconf ./src ./lib
@@ -62,9 +68,6 @@ npx lostconf --fail-on-stale
 
 # JSON output for automation
 npx lostconf --format json
-
-# Skip .gitignore and other ignore files (reduces noise by 70-80%)
-npx lostconf --skip-ignore-files
 
 # Only check TypeScript configs
 npx lostconf --include "**/tsconfig.json"

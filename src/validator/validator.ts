@@ -9,6 +9,7 @@ import { pathExists } from '../filetree/tree.js';
 import type { FileTree } from '../filetree/tree.js';
 import { globMatches, isValidGlob } from './glob.js';
 import { regexMatches, isValidRegex } from './regex.js';
+import { classifySeverity } from '../core/severity.js';
 
 export interface ValidatorOptions {
   /** Base path for relative patterns in the config file */
@@ -107,6 +108,8 @@ export function validatePatterns(
     const result = validatePattern(pattern, tree, { configBasePath });
 
     if (!result.valid && result.reason) {
+      const severity = classifySeverity(pattern.value, parserName, configFile);
+
       findings.push({
         file: configFile,
         line: pattern.line,
@@ -114,7 +117,8 @@ export function validatePatterns(
         pattern: pattern.value,
         type: pattern.type,
         reason: result.reason,
-        parser: parserName
+        parser: parserName,
+        severity
       });
     }
   }

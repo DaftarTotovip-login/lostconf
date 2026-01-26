@@ -4,6 +4,7 @@
 
 import chalk from 'chalk';
 import type { ValidationResult, Finding, StaleReason } from '../core/types.js';
+import { Severity } from '../core/types.js';
 import type { Formatter } from './formatter.js';
 
 /** Format reason for display */
@@ -18,8 +19,21 @@ function formatReason(reason: StaleReason): string {
   }
 }
 
+/** Get severity icon */
+function getSeverityIcon(severity: Severity): string {
+  switch (severity) {
+    case Severity.LOW:
+      return chalk.gray('○');
+    case Severity.MEDIUM:
+      return chalk.yellow('●');
+    case Severity.HIGH:
+      return chalk.red('●');
+  }
+}
+
 /** Format a single finding */
 function formatFinding(finding: Finding): string {
+  const severityIcon = getSeverityIcon(finding.severity);
   const location = chalk.cyan(`${finding.file}:${finding.line}`);
   const pattern = chalk.yellow(finding.pattern);
   const reason = chalk.dim(formatReason(finding.reason));
@@ -28,7 +42,7 @@ function formatFinding(finding: Finding): string {
   const locationStr = `${finding.file}:${finding.line}`;
   const padding = Math.max(0, 25 - locationStr.length);
 
-  return `${location}${' '.repeat(padding)}${pattern.padEnd(30)}${reason}`;
+  return `${severityIcon} ${location}${' '.repeat(padding)}${pattern.padEnd(30)}${reason}`;
 }
 
 /** Text formatter */
@@ -56,14 +70,31 @@ export const textFormatter: Formatter = {
       }
     }
 
-    // Summary
+    // Summary with severity breakdown
     lines.push('');
+
+    const severityCounts = {
+      [Severity.HIGH]: result.findings.filter((f) => f.severity === Severity.HIGH).length,
+      [Severity.MEDIUM]: result.findings.filter((f) => f.severity === Severity.MEDIUM).length,
+      [Severity.LOW]: result.findings.filter((f) => f.severity === Severity.LOW).length
+    };
+
     const totalText = result.summary.total === 1 ? 'pattern' : 'patterns';
     const filesText = result.summary.files === 1 ? 'file' : 'files';
+
+    const parts = [];
+    if (severityCounts[Severity.HIGH] > 0) {
+      parts.push(chalk.red(`${severityCounts[Severity.HIGH]} high`));
+    }
+    if (severityCounts[Severity.MEDIUM] > 0) {
+      parts.push(chalk.yellow(`${severityCounts[Severity.MEDIUM]} medium`));
+    }
+    if (severityCounts[Severity.LOW] > 0) {
+      parts.push(chalk.gray(`${severityCounts[Severity.LOW]} low`));
+    }
+
     lines.push(
-      chalk.red(
-        `Found ${result.summary.total} stale ${totalText} in ${result.summary.files} ${filesText}`
-      )
+      `Found ${result.summary.total} stale ${totalText} in ${result.summary.files} ${filesText} (${parts.join(', ')})`
     );
 
     return lines.join('\n');

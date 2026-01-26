@@ -1,0 +1,57 @@
+# Source files (we publish compiled JS from dist/)
+src/
+tests/
+*.test.ts
+*.test.js
+
+# Build and development
+tsconfig.json
+vitest.config.ts
+.github/
+.vscode/
+.claude/
+scripts/
+
+# Documentation (kept in package)
+# README.md
+# CHANGELOG.md
+# LICENSE.md
+# NPM_PUBLISHING_GUIDE.md - excluded as it's for maintainers
+
+# Config files
+.eslintrc*
+.prettierrc*
+.editorconfig
+.gitignore
+.prettierignore
+eslint.config.js
+
+# Test and coverage
+coverage/
+.nyc_output/
+*.tgz
+
+# Reports
+*REPORT.md
+*_REPORT.md
+*RESULTS.md
+COMPREHENSIVE_VALIDATION_REPORT.md
+OSS_VALIDATION_REPORT.md
+FIX_RESULTS.md
+NEW_FEATURES.md
+PERFORMANCE_ANALYSIS.md
+BUG_REPORT_AND_VALIDATION.md
+NEXTJS_LINTING_RESULTS.md
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+node_modules/
+
+# CI/CD (GitHub Actions workflows not needed in package)
+.github/
+
+# Scripts (maintainer only)
+scripts/
+test-*.sh
