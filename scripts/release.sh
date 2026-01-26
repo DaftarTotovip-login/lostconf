@@ -71,7 +71,7 @@ git push
 echo "Creating GitHub release..."
 gh release create "v$NEW_VERSION" \
   --title "Release v$NEW_VERSION" \
-  --notes "See [CHANGELOG.md](https://github.com/lostconf/lostconf/blob/master/CHANGELOG.md#${NEW_VERSION//.}) for details." \
+  --notes "See [CHANGELOG.md](https://github.com/mensfeld/lostconf/blob/master/CHANGELOG.md#${NEW_VERSION//.}) for details." \
   --verify-tag
 
 echo ""
@@ -79,5 +79,5 @@ echo "✅ Release v$NEW_VERSION created!"
 echo "📦 GitHub Actions will automatically publish to NPM with provenance"
 echo ""
 echo "🔗 NPM Package: https://www.npmjs.com/package/lostconf"
-echo "🔗 GitHub Release: https://github.com/lostconf/lostconf/releases/tag/v$NEW_VERSION"
-echo "🔗 Workflow: https://github.com/lostconf/lostconf/actions/workflows/publish.yml"
+echo "🔗 GitHub Release: https://github.com/mensfeld/lostconf/releases/tag/v$NEW_VERSION"
+echo "🔗 Workflow: https://github.com/mensfeld/lostconf/actions/workflows/publish.yml"

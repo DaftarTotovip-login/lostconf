@@ -1,6 +1,6 @@
 # lostconf
 
-[![CI](https://github.com/lostconf/lostconf/actions/workflows/ci.yml/badge.svg)](https://github.com/lostconf/lostconf/actions/workflows/ci.yml)
+[![CI](https://github.com/mensfeld/lostconf/actions/workflows/ci.yml/badge.svg)](https://github.com/mensfeld/lostconf/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/lostconf.svg)](https://www.npmjs.com/package/lostconf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -411,7 +411,7 @@ Contributions are welcome! Here's how to get started:
 
 ```bash
 # Clone the repository
-git clone https://github.com/lostconf/lostconf.git
+git clone https://github.com/mensfeld/lostconf.git
 cd lostconf
 
 # Install dependencies

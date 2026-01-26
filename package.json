@@ -34,12 +34,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lostconf/lostconf.git"
+    "url": "https://github.com/mensfeld/lostconf.git"
   },
   "bugs": {
-    "url": "https://github.com/lostconf/lostconf/issues"
+    "url": "https://github.com/mensfeld/lostconf/issues"
   },
-  "homepage": "https://github.com/lostconf/lostconf#readme",
+  "homepage": "https://github.com/mensfeld/lostconf#readme",
   "keywords": [
     "linter",
     "config",
@@ -49,7 +49,7 @@
     "prettier",
     "cleanup"
   ],
-  "author": "",
+  "author": "Maciej Mensfeld <maciej@mensfeld.pl>",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
