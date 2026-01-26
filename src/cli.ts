@@ -27,7 +27,11 @@ program
   .option('--exclude <glob...>', 'Skip matching config files')
   .option('--skip-ignore-files', 'Skip .gitignore, .prettierignore, etc. (reduces noise)')
   .option('--exclude-parsers <names...>', 'Skip specific parsers (e.g., gitignore prettierignore)')
-  .option('--min-severity <level>', 'Minimum severity to show: low, medium, high (default: medium)', 'medium')
+  .option(
+    '--min-severity <level>',
+    'Minimum severity to show: low, medium, high (default: medium)',
+    'medium'
+  )
   .option('--show-all', 'Show all findings including low severity (same as --min-severity=low)')
   .option('--fail-on-stale', 'Exit code 1 if stale patterns found')
   .option('-q, --quiet', 'Suppress non-error output')

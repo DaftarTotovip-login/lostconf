@@ -80,7 +80,9 @@ export function createEngine(parsers: Parser[], options: EngineOptions): Engine 
           const percent = Math.round(((i + 1) / configs.length) * 100);
           const shortPath = config.path.length > 60 ? '...' + config.path.slice(-57) : config.path;
           process.stderr.write(`\r\x1b[K`); // Clear line
-          process.stderr.write(`Processing configs... [${i + 1}/${configs.length}] ${percent}% - ${shortPath}`);
+          process.stderr.write(
+            `Processing configs... [${i + 1}/${configs.length}] ${percent}% - ${shortPath}`
+          );
         }
 
         try {

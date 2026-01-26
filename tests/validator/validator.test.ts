@@ -223,12 +223,7 @@ describe('validatePatterns', () => {
         { value: './missing.json', type: PatternType.PATH, line: 6 }
       ];
 
-      const findings = validatePatterns(
-        'packages/foo/tsconfig.json',
-        patterns,
-        'tsconfig',
-        tree
-      );
+      const findings = validatePatterns('packages/foo/tsconfig.json', patterns, 'tsconfig', tree);
 
       expect(findings).toHaveLength(1);
       expect(findings[0].pattern).toBe('./missing.json');

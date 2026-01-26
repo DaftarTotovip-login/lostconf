@@ -133,7 +133,7 @@ describe('CLI Integration Tests', () => {
     await fs.writeFile(path.join(testDir, '.gitignore'), 'stale-git');
     await fs.writeFile(path.join(testDir, '.prettierignore'), 'stale-prettier');
 
-    const { stdout} = await execAsync(
+    const { stdout } = await execAsync(
       `node ${cliPath} ${testDir} --format json --exclude "**/.gitignore" --show-all`
     );
 
